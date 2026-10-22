@@ -30,4 +30,11 @@
       <HintPath>BepuUtilities.dll</HintPath>
     </Reference>
   </ItemGroup>
+
+  <ItemGroup Condition="'$(SimHostCoreLib)' != ''">
+    <Reference Include="System.Private.CoreLib">
+      <HintPath>$(SimHostCoreLib)</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
 </Project>
