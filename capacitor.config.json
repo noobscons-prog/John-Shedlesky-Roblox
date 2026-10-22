@@ -1,0 +1,13 @@
+{
+  "appId": "com.noobscons.sfoth",
+  "appName": "SFOTH",
+  "webDir": "SFOTH",
+  "server": {
+    "hostname": "localhost",
+    "iosScheme": "capacitor"
+  },
+  "ios": {
+    "contentInset": "always",
+    "allowsLinkPreview": false
+  }
+}
