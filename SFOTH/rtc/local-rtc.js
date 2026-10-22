@@ -159,6 +159,15 @@ export class LocalRTC {
     }
   }
 
+  async fetchSnapshot() {
+    try {
+      const res = await fetch(`${this.signalUrl}/sim/snapshot`);
+      return await res.text();
+    } catch (_) {
+      return null;
+    }
+  }
+
   stop() {
     this.polling = false;
 
