@@ -20,13 +20,14 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      - name: Discover System.Private.CoreLib
-        id: corelib
+      - name: Discover .NET runtime folder
+        id: runtimedir
         run: |
-          CORELIB=$(find "${DOTNET_ROOT:-$HOME/.dotnet}/shared/Microsoft.NETCore.App" \
-            -name System.Private.CoreLib.dll 2>/dev/null | sort -V | tail -1)
-          echo "path=$CORELIB" >> "$GITHUB_OUTPUT"
-          echo "found: $CORELIB"
+          RUNTIME_DIR=$(find "${DOTNET_ROOT:-$HOME/.dotnet}/shared/Microsoft.NETCore.App" \
+            -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)
+          echo "path=$RUNTIME_DIR" >> "$GITHUB_OUTPUT"
+          echo "found: $RUNTIME_DIR"
+          ls "$RUNTIME_DIR" | head -5
 
       - name: Install Capacitor
         run: |
@@ -52,7 +53,7 @@ jobs:
           dotnet publish server/sim/SimHost.csproj \
             -r ios-arm64 \
             -c Release \
-            -p:SimHostCoreLib="${{ steps.corelib.outputs.path }}"
+            -p:SimHostRuntimeDir="${{ steps.runtimedir.outputs.path }}"
 
           ls -la server/sim/bin/Release/net10.0/ios-arm64/publish/
 
