@@ -27,7 +27,6 @@ jobs:
             -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)
           echo "path=$RUNTIME_DIR" >> "$GITHUB_OUTPUT"
           echo "found: $RUNTIME_DIR"
-          ls "$RUNTIME_DIR" | head -5
 
       - name: Install Capacitor
         run: |
@@ -48,50 +47,21 @@ jobs:
         run: |
           npx cap sync ios
 
-      - name: Build SimHost NativeAOT library for iOS
+      - name: Build SimHost NativeAOT static library for iOS
         run: |
           dotnet publish server/sim/SimHost.csproj \
             -r ios-arm64 \
             -c Release \
             -p:SimHostRuntimeDir="${{ steps.runtimedir.outputs.path }}"
 
+          echo "=== publish output ==="
           ls -la server/sim/bin/Release/net10.0/ios-arm64/publish/
 
-      - name: Package SimHost.framework
-        run: |
-          mkdir -p SimHost.framework
+          mkdir -p sim-libs
+          cp server/sim/bin/Release/net10.0/ios-arm64/publish/*.a sim-libs/
 
-          cp server/sim/bin/Release/net10.0/ios-arm64/publish/SimHost.dylib \
-             SimHost.framework/SimHost
-
-          install_name_tool -id @rpath/SimHost.framework/SimHost \
-             SimHost.framework/SimHost
-
-          cat > SimHost.framework/Info.plist <<'PLIST'
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-              <key>CFBundleExecutable</key>
-              <string>SimHost</string>
-              <key>CFBundleIdentifier</key>
-              <string>com.noobscons.sfoth.simhost</string>
-              <key>CFBundleName</key>
-              <string>SimHost</string>
-              <key>CFBundlePackageType</key>
-              <string>FMWK</string>
-              <key>CFBundleShortVersionString</key>
-              <string>1.0</string>
-              <key>CFBundleVersion</key>
-              <string>1</string>
-              <key>MinimumOSVersion</key>
-              <string>15.0</string>
-          </dict>
-          </plist>
-          PLIST
-
-          mkdir -p ios/App/App/Frameworks
-          cp -R SimHost.framework ios/App/App/Frameworks/
+          echo "=== sim-libs ==="
+          ls -la sim-libs/
 
       - name: Add NativeSimHost.swift
         run: |
@@ -384,7 +354,12 @@ jobs:
           /usr/libexec/PlistBuddy -c "Add :NSAppTransportSecurity:NSAllowsLocalNetworking bool true" "$PLIST"
 
       - name: Build unsigned app
+        env:
+          LIB_DIR: ${{ github.workspace }}/sim-libs
         run: |
+          set -x
+          ls -la "$LIB_DIR"
+
           xcodebuild \
             -workspace ios/App/App.xcworkspace \
             -scheme App \
@@ -393,14 +368,14 @@ jobs:
             -derivedDataPath build \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
-            FRAMEWORK_SEARCH_PATHS="$(pwd)/ios/App/App/Frameworks" \
-            OTHER_LDFLAGS="-framework SimHost -lz -lc++ -framework Foundation -framework CoreFoundation -framework Security"
+            OTHER_LDFLAGS="-L${LIB_DIR} -lSimHost -Wl,-force_load,${LIB_DIR}/libSimHost.a -lz -lc++ -liconv -framework Foundation -framework CoreFoundation -framework Security" \
+            -verbose 2>&1 | tee xcodebuild.log
 
-      - name: Embed SimHost.framework into the app bundle
+      - name: Show xcodebuild tail on failure
+        if: failure()
         run: |
-          APP=build/Build/Products/Release-iphoneos/App.app
-          mkdir -p "$APP/Frameworks"
-          cp -R ios/App/App/Frameworks/SimHost.framework "$APP/Frameworks/"
+          echo "=== last 200 lines of xcodebuild.log ==="
+          tail -200 xcodebuild.log || true
 
       - name: Package unsigned IPA
         run: |
@@ -412,3 +387,9 @@ jobs:
         with:
           name: SFOTH-unsigned-ipa
           path: SFOTH-unsigned.ipa
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: xcodebuild-log
+          path: xcodebuild.log
