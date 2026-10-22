@@ -21,9 +21,12 @@
     <InvariantGlobalization>true</InvariantGlobalization>
     <NoWarn>$(NoWarn);CA1416</NoWarn>
     <EnablePlatformAnalyzer>false</EnablePlatformAnalyzer>
+    <!-- Critical: allow the SDK to resolve the NativeAOT runtime pack on iOS -->
+    <DisableImplicitFrameworkReferences>false</DisableImplicitFrameworkReferences>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(SimHostRuntimeDir)' != ''">
+  <!-- Linux-only manual references. Skipped on iOS because implicit refs are enabled there. -->
+  <ItemGroup Condition="'$(SimHostRuntimeDir)' != '' AND '$(DisableImplicitFrameworkReferences)' == 'true'">
     <Reference Include="$(SimHostRuntimeDir)/*.dll">
       <Private>false</Private>
     </Reference>
