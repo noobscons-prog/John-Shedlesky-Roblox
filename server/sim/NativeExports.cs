@@ -27,7 +27,7 @@ public static class NativeExports
     {
         try
         {
-            // Replace this with the call that advances your sim by one tick.
+            // Replace this with your tick call.
             // Example: Program.Tick();
             return 0;
         }
@@ -42,7 +42,7 @@ public static class NativeExports
     {
         lock (_lock)
         {
-            // Replace this with the call that returns your snapshot JSON.
+            // Replace this with your snapshot call.
             string json = "{}";
 
             if (_lastJsonPtr != IntPtr.Zero)
