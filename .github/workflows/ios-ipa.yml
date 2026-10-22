@@ -1,0 +1,275 @@
+name: Build iOS IPA (unsigned)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build-ipa:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Capacitor
+        run: |
+          test -f package.json || npm init -y
+          npm install --no-audit --no-fund @capacitor/core @capacitor/cli @capacitor/ios
+
+      - name: Generate iOS project
+        run: |
+          npx cap add ios || true
+          npx cap sync ios
+
+      - name: Add embedded signaling server
+        run: |
+          cat > ios/App/App/EmbeddedSignalingServer.swift <<'SWIFT'
+          import Foundation
+          import Network
+
+          final class EmbeddedSignalingServer {
+              static let shared = EmbeddedSignalingServer()
+
+              private var listener: NWListener?
+              private let queue = DispatchQueue(label: "sfoth.signaling")
+              private var rooms: [String: [String: [[String: Any]]]] = [:]
+
+              func start(port: UInt16 = 8081) throws {
+                  if listener != nil { return }
+
+                  let params = NWParameters.tcp
+                  params.allowLocalEndpointReuse = true
+
+                  let l = try NWListener(using: params, on: NWEndpoint.Port(rawValue: port)!)
+                  l.newConnectionHandler = { [weak self] conn in
+                      self?.handle(conn)
+                  }
+                  l.start(queue: queue)
+                  listener = l
+              }
+
+              private struct Request {
+                  let method: String
+                  let path: String
+                  let query: [String: String]
+                  let body: Data
+              }
+
+              private func handle(_ conn: NWConnection) {
+                  conn.start(queue: queue)
+                  receive(conn, buffer: Data())
+              }
+
+              private func receive(_ conn: NWConnection, buffer: Data) {
+                  conn.receive(minimumIncompleteLength: 1, maximumLength: 65536) { [weak self] data, _, isComplete, error in
+                      guard let self = self else { return }
+
+                      var buf = buffer
+                      if let data = data { buf.append(data) }
+
+                      if let req = self.parse(buf) {
+                          self.route(req, conn)
+                          return
+                      }
+
+                      if isComplete || error != nil {
+                          conn.cancel()
+                          return
+                      }
+
+                      self.receive(conn, buffer: buf)
+                  }
+              }
+
+              private func parse(_ data: Data) -> Request? {
+                  guard let sep = data.range(of: Data("\r\n\r\n".utf8)) else { return nil }
+
+                  let head = data.subdata(in: 0..<sep.lowerBound)
+                  let bodyStart = sep.upperBound
+
+                  guard let headStr = String(data: head, encoding: .utf8) else { return nil }
+                  let lines = headStr.components(separatedBy: "\r\n")
+                  guard let first = lines.first else { return nil }
+
+                  let parts = first.split(separator: " ")
+                  guard parts.count >= 2 else { return nil }
+
+                  let method = String(parts[0])
+                  let fullPath = String(parts[1])
+
+                  var path = fullPath
+                  var query: [String: String] = [:]
+
+                  if let qIndex = fullPath.firstIndex(of: "?") {
+                      path = String(fullPath[..<qIndex])
+                      let qs = String(fullPath[fullPath.index(after: qIndex)...])
+                      for pair in qs.split(separator: "&") {
+                          let kv = pair.split(separator: "=", maxSplits: 1).map(String.init)
+                          if kv.count == 2 {
+                              query[kv[0]] = kv[1].removingPercentEncoding ?? kv[1]
+                          }
+                      }
+                  }
+
+                  var contentLength = 0
+                  for line in lines.dropFirst() {
+                      let lower = line.lowercased()
+                      if lower.hasPrefix("content-length:") {
+                          let value = line.split(separator: ":", maxSplits: 1).dropFirst().joined()
+                          contentLength = Int(value.trimmingCharacters(in: .whitespaces)) ?? 0
+                      }
+                  }
+
+                  guard data.count >= bodyStart + contentLength else { return nil }
+                  let body = data.subdata(in: bodyStart..<(bodyStart + contentLength))
+
+                  return Request(method: method, path: path, query: query, body: body)
+              }
+
+              private func route(_ req: Request, _ conn: NWConnection) {
+                  if req.method == "OPTIONS" {
+                      respond(conn, 204, "")
+                      return
+                  }
+
+                  if req.method == "POST" && req.path == "/create" {
+                      let room = String(UUID().uuidString.prefix(6)).lowercased()
+                      rooms[room] = ["host": [], "guest": []]
+                      respond(conn, 200, "{\"room\":\"\(room)\"}")
+                      return
+                  }
+
+                  if req.method == "POST" && req.path == "/send" {
+                      guard let room = req.query["room"],
+                            let to = req.query["to"],
+                            rooms[room] != nil else {
+                          respond(conn, 404, "{\"error\":\"no room\"}")
+                          return
+                      }
+
+                      let obj = (try? JSONSerialization.jsonObject(with: req.body)) as? [String: Any] ?? [:]
+                      var bucket = rooms[room]!
+                      var arr = bucket[to] ?? []
+                      arr.append(obj)
+                      bucket[to] = arr
+                      rooms[room] = bucket
+
+                      respond(conn, 200, "{\"ok\":true}")
+                      return
+                  }
+
+                  if req.method == "GET" && req.path == "/poll" {
+                      guard let room = req.query["room"],
+                            let role = req.query["role"],
+                            var bucket = rooms[room] else {
+                          respond(conn, 404, "{\"error\":\"no room\"}")
+                          return
+                      }
+
+                      let msgs = bucket[role] ?? []
+                      bucket[role] = []
+                      rooms[room] = bucket
+
+                      let data = (try? JSONSerialization.data(withJSONObject: msgs)) ?? Data("[]".utf8)
+                      respondData(conn, 200, data)
+                      return
+                  }
+
+                  respond(conn, 404, "{\"error\":\"not found\"}")
+              }
+
+              private func respond(_ conn: NWConnection, _ code: Int, _ body: String) {
+                  respondData(conn, code, Data(body.utf8))
+              }
+
+              private func respondData(_ conn: NWConnection, _ code: Int, _ body: Data) {
+                  let status: String
+                  switch code {
+                  case 200: status = "200 OK"
+                  case 204: status = "204 No Content"
+                  default: status = "404 Not Found"
+                  }
+
+                  let header = """
+                  HTTP/1.1 \(status)\r
+                  Content-Type: application/json\r
+                  Access-Control-Allow-Origin: *\r
+                  Access-Control-Allow-Methods: GET,POST,OPTIONS\r
+                  Access-Control-Allow-Headers: Content-Type\r
+                  Content-Length: \(body.count)\r
+                  Connection: close\r
+                  \r
+                  """
+
+                  var out = Data(header.utf8)
+                  out.append(body)
+
+                  conn.send(content: out, completion: .contentProcessed { _ in
+                      conn.cancel()
+                  })
+              }
+          }
+          SWIFT
+
+      - name: Patch AppDelegate
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p = Path("ios/App/App/AppDelegate.swift")
+          s = p.read_text()
+
+          idx = s.find("didFinishLaunchingWithOptions")
+          if idx == -1:
+              raise SystemExit("didFinishLaunchingWithOptions not found")
+
+          ret = s.find("return true", idx)
+          if ret == -1:
+              raise SystemExit("return true not found")
+
+          insert = "        try? EmbeddedSignalingServer.shared.start(port: 8081)\n"
+          s = s[:ret] + insert + s[ret:]
+          p.write_text(s)
+          PY
+
+      - name: Patch Info.plist
+        run: |
+          PLIST=ios/App/App/Info.plist
+
+          /usr/libexec/PlistBuddy -c "Delete :NSLocalNetworkUsageDescription" "$PLIST" || true
+          /usr/libexec/PlistBuddy -c "Add :NSLocalNetworkUsageDescription string 'SFOTH uses your local network to host and join multiplayer games.'" "$PLIST"
+
+          /usr/libexec/PlistBuddy -c "Delete :NSBonjourServices" "$PLIST" || true
+          /usr/libexec/PlistBuddy -c "Add :NSBonjourServices array" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Add :NSBonjourServices:0 string _sfoth._tcp" "$PLIST"
+
+          /usr/libexec/PlistBuddy -c "Delete :NSAppTransportSecurity" "$PLIST" || true
+          /usr/libexec/PlistBuddy -c "Add :NSAppTransportSecurity dict" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Add :NSAppTransportSecurity:NSAllowsLocalNetworking bool true" "$PLIST"
+
+      - name: Build unsigned app
+        run: |
+          xcodebuild \
+            -workspace ios/App/App.xcworkspace \
+            -scheme App \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO
+
+      - name: Package unsigned IPA
+        run: |
+          mkdir -p Payload
+          cp -R build/Build/Products/Release-iphoneos/App.app Payload/
+          zip -r SFOTH-unsigned.ipa Payload
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SFOTH-unsigned-ipa
+          path: SFOTH-unsigned.ipa
