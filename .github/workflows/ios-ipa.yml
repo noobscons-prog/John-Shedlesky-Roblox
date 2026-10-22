@@ -309,7 +309,7 @@ jobs:
                   var out = Data(header.utf8)
                   out.append(body)
 
-                  conn.send(content: out, completion: .contentProcessed { _ in
+                  conn.send(content: out, contentContext: .default, isComplete: true, completion: .contentProcessed { _ in
                       conn.cancel()
                   })
               }
@@ -353,6 +353,10 @@ jobs:
           /usr/libexec/PlistBuddy -c "Add :NSAppTransportSecurity dict" "$PLIST"
           /usr/libexec/PlistBuddy -c "Add :NSAppTransportSecurity:NSAllowsLocalNetworking bool true" "$PLIST"
 
+      - name: Validate Info.plist
+        run: |
+          plutil -lint ios/App/App/Info.plist
+
       - name: Build unsigned app
         env:
           LIB_DIR: ${{ github.workspace }}/sim-libs
@@ -377,11 +381,26 @@ jobs:
           echo "=== last 200 lines of xcodebuild.log ==="
           tail -200 xcodebuild.log || true
 
+      - name: Inspect App Bundle
+        run: |
+          echo "=== App Bundle Root ==="
+          ls -la build/Build/Products/Release-iphoneos/App.app/
+          echo "=== Executable Architecture ==="
+          lipo -info build/Build/Products/Release-iphoneos/App.app/App || true
+          echo "=== Frameworks (if any) ==="
+          ls -la build/Build/Products/Release-iphoneos/App.app/Frameworks 2>/dev/null || echo "No Frameworks folder"
+
       - name: Package unsigned IPA
         run: |
+          rm -rf Payload
           mkdir -p Payload
           cp -R build/Build/Products/Release-iphoneos/App.app Payload/
-          zip -r SFOTH-unsigned.ipa Payload
+          
+          # Create a clean IPA archive bypassing macOS metadata
+          ditto -c -k --sequesterRsrc --keepParent Payload SFOTH-unsigned.ipa
+          
+          echo "=== IPA Structure Check ==="
+          unzip -l SFOTH-unsigned.ipa
 
       - uses: actions/upload-artifact@v4
         with:
