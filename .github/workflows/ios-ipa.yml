@@ -26,7 +26,6 @@ jobs:
           RUNTIME_DIR=$(find "${DOTNET_ROOT:-$HOME/.dotnet}/shared/Microsoft.NETCore.App" \
             -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)
           echo "path=$RUNTIME_DIR" >> "$GITHUB_OUTPUT"
-          echo "found: $RUNTIME_DIR"
 
       - name: Install Capacitor
         run: |
@@ -303,12 +302,30 @@ jobs:
                   var out = Data(header.utf8)
                   out.append(body)
 
-                  conn.send(content: out, contentContext: .default, isComplete: true, completion: .contentProcessed { _ in
+                  conn.send(content: out, contentContext: .defaultMessage, isComplete: true, completion: .contentProcessed { _ in
                       conn.cancel()
                   })
               }
           }
           SWIFT
+
+      - name: Add Swift files to Xcode project
+        run: |
+          gem install xcodeproj --no-document
+          ruby -e '
+            require "xcodeproj"
+            project = Xcodeproj::Project.open("ios/App/App.xcodeproj")
+            target = project.targets.find { |t| t.name == "App" }
+            group = project.main_group.find_subpath("App", true)
+            
+            ["NativeSimHost.swift", "EmbeddedSignalingServer.swift"].each do |file|
+              file_ref = group.files.find { |f| f.path == file } || group.new_reference(file)
+              unless target.source_build_phase.files_references.include?(file_ref)
+                target.add_file_references([file_ref])
+              end
+            end
+            project.save
+          '
 
       - name: Patch AppDelegate
         run: |
@@ -357,6 +374,9 @@ jobs:
         env:
           LIB_DIR: ${{ github.workspace }}/sim-libs
         run: |
+          set -o pipefail
+          set -e
+          
           xcodebuild \
             -workspace ios/App/App.xcworkspace \
             -scheme App \
@@ -389,7 +409,6 @@ jobs:
 
           plutil -lint Payload/App.app/Info.plist
 
-          # Verify CFBundleExecutable
           EXEC_NAME=$(/usr/libexec/PlistBuddy -c "Print :CFBundleExecutable" Payload/App.app/Info.plist)
           echo "Executable: $EXEC_NAME"
           
@@ -398,10 +417,8 @@ jobs:
             exit 1
           fi
 
-          # Remove any leftover Xcode signature folders
           rm -rf Payload/App.app/_CodeSignature
           
-          # Apply a dummy ad-hoc signature
           echo "Signing executable..."
           codesign --force --sign - Payload/App.app/$EXEC_NAME
 
@@ -417,7 +434,6 @@ jobs:
           echo "Signing bundle..."
           codesign --force --sign - Payload/App.app
           
-          # Create a clean IPA archive bypassing macOS metadata
           ditto -c -k --sequesterRsrc --keepParent Payload SFOTH-unsigned.ipa
           
           echo "=== IPA Structure Check ==="
