@@ -21,18 +21,18 @@
     <InvariantGlobalization>true</InvariantGlobalization>
     <NoWarn>$(NoWarn);CA1416</NoWarn>
     <EnablePlatformAnalyzer>false</EnablePlatformAnalyzer>
-    <!-- Critical: allow the SDK to resolve the NativeAOT runtime pack on iOS -->
     <DisableImplicitFrameworkReferences>false</DisableImplicitFrameworkReferences>
   </PropertyGroup>
 
-  <!-- Linux-only manual references. Skipped on iOS because implicit refs are enabled there. -->
-  <ItemGroup Condition="'$(SimHostRuntimeDir)' != '' AND '$(DisableImplicitFrameworkReferences)' == 'true'">
+  <!-- Linux/desktop: manual runtime folder references. Not used on iOS. -->
+  <ItemGroup Condition="'$(RuntimeIdentifier)' == '' AND '$(SimHostRuntimeDir)' != ''">
     <Reference Include="$(SimHostRuntimeDir)/*.dll">
       <Private>false</Private>
     </Reference>
   </ItemGroup>
 
-  <ItemGroup>
+  <!-- Pre-built DLLs that target System.Private.CoreLib: desktop only, excluded from iOS. -->
+  <ItemGroup Condition="'$(RuntimeIdentifier)' != 'ios-arm64'">
     <Reference Include="SFOTH.Simulation">
       <HintPath>SFOTH.Simulation.dll</HintPath>
     </Reference>
@@ -45,5 +45,10 @@
     <Reference Include="BepuUtilities">
       <HintPath>BepuUtilities.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <!-- iOS: exclude desktop entry point. Only NativeExports.cs compiles for iOS. -->
+  <ItemGroup Condition="'$(RuntimeIdentifier)' == 'ios-arm64'">
+    <Compile Remove="Program.cs" />
   </ItemGroup>
 </Project>
