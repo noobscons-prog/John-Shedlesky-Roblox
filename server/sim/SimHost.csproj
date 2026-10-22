@@ -16,6 +16,7 @@
     <OutputType>Library</OutputType>
     <PublishAot>true</PublishAot>
     <PublishAotUsingRuntimePack>true</PublishAotUsingRuntimePack>
+    <NativeLib>Static</NativeLib>
     <StripSymbols>true</StripSymbols>
     <PublishTrimmed>true</PublishTrimmed>
     <InvariantGlobalization>true</InvariantGlobalization>
@@ -24,14 +25,12 @@
     <DisableImplicitFrameworkReferences>false</DisableImplicitFrameworkReferences>
   </PropertyGroup>
 
-  <!-- Linux/desktop: manual runtime folder references. Not used on iOS. -->
   <ItemGroup Condition="'$(RuntimeIdentifier)' == '' AND '$(SimHostRuntimeDir)' != ''">
     <Reference Include="$(SimHostRuntimeDir)/*.dll">
       <Private>false</Private>
     </Reference>
   </ItemGroup>
 
-  <!-- Pre-built DLLs that target System.Private.CoreLib: desktop only, excluded from iOS. -->
   <ItemGroup Condition="'$(RuntimeIdentifier)' != 'ios-arm64'">
     <Reference Include="SFOTH.Simulation">
       <HintPath>SFOTH.Simulation.dll</HintPath>
@@ -47,7 +46,6 @@
     </Reference>
   </ItemGroup>
 
-  <!-- iOS: exclude desktop entry point. Only NativeExports.cs compiles for iOS. -->
   <ItemGroup Condition="'$(RuntimeIdentifier)' == 'ios-arm64'">
     <Compile Remove="Program.cs" />
   </ItemGroup>
