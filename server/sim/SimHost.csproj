@@ -5,185 +5,29 @@
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <AssemblyName>SimHost</AssemblyName>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
-    <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
-    <UseAppHost>false</UseAppHost>
-    <RuntimeFrameworkVersion>10.0.0</RuntimeFrameworkVersion>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'ios-arm64'">
+    <OutputType>Library</OutputType>
+    <PublishAot>true</PublishAot>
+    <NativeLib>Static</NativeLib>
+    <StripSymbols>true</StripSymbols>
+    <PublishTrimmed>true</PublishTrimmed>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="Microsoft.CSharp"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/Microsoft.CSharp.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="Microsoft.VisualBasic.Core"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/Microsoft.VisualBasic.Core.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="Microsoft.VisualBasic"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/Microsoft.VisualBasic.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="Microsoft.Win32.Primitives"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/Microsoft.Win32.Primitives.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="Microsoft.Win32.Registry"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/Microsoft.Win32.Registry.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.AppContext"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.AppContext.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Buffers"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Buffers.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Collections.Concurrent"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Collections.Concurrent.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Collections.Immutable"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Collections.Immutable.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Collections.NonGeneric"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Collections.NonGeneric.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Collections.Specialized"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Collections.Specialized.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Collections"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Collections.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.ComponentModel.Annotations"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.ComponentModel.Annotations.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.ComponentModel.DataAnnotations"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.ComponentModel.DataAnnotations.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.ComponentModel.EventBasedAsync"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.ComponentModel.EventBasedAsync.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.ComponentModel.Primitives"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.ComponentModel.Primitives.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.ComponentModel.TypeConverter"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.ComponentModel.TypeConverter.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.ComponentModel"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.ComponentModel.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Configuration"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Configuration.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Console"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Console.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Core"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Core.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Data.Common"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Data.Common.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Data.DataSetExtensions"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Data.DataSetExtensions.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Data"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Data.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Diagnostics.Contracts"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Diagnostics.Contracts.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Diagnostics.Debug"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Diagnostics.Debug.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Diagnostics.DiagnosticSource"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Diagnostics.DiagnosticSource.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Diagnostics.FileVersionInfo"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Diagnostics.FileVersionInfo.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Diagnostics.Process"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Diagnostics.Process.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Diagnostics.StackTrace"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Diagnostics.StackTrace.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Diagnostics.TextWriterTraceListener"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Diagnostics.TextWriterTraceListener.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Diagnostics.Tools"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Diagnostics.Tools.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Diagnostics.TraceSource"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Diagnostics.TraceSource.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Diagnostics.Tracing"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Diagnostics.Tracing.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Drawing.Primitives"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Drawing.Primitives.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Drawing"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Drawing.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Dynamic.Runtime"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Dynamic.Runtime.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Formats.Asn1"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Formats.Asn1.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Formats.Tar"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Formats.Tar.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Globalization.Calendars"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Globalization.Calendars.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Globalization.Extensions"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Globalization.Extensions.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Globalization"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Globalization.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.IO.Compression.Brotli"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.IO.Compression.Brotli.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.IO.Compression.FileSystem"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.IO.Compression.FileSystem.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.IO.Compression.ZipFile"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.IO.Compression.ZipFile.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.IO.Compression"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.IO.Compression.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.IO.FileSystem.AccessControl"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.IO.FileSystem.AccessControl.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.IO.FileSystem.DriveInfo"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.IO.FileSystem.DriveInfo.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.IO.FileSystem.Primitives"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.IO.FileSystem.Primitives.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.IO.FileSystem.Watcher"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.IO.FileSystem.Watcher.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.IO.FileSystem"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.IO.FileSystem.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.IO.IsolatedStorage"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.IO.IsolatedStorage.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.IO.MemoryMappedFiles"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.IO.MemoryMappedFiles.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.IO.Pipelines"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.IO.Pipelines.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.IO.Pipes.AccessControl"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.IO.Pipes.AccessControl.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.IO.Pipes"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.IO.Pipes.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.IO.UnmanagedMemoryStream"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.IO.UnmanagedMemoryStream.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.IO"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.IO.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Linq.AsyncEnumerable"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Linq.AsyncEnumerable.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Linq.Expressions"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Linq.Expressions.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Linq.Parallel"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Linq.Parallel.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Linq.Queryable"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Linq.Queryable.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Linq"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Linq.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Memory"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Memory.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Net.Http.Json"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Net.Http.Json.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Net.Http"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Net.Http.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Net.HttpListener"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Net.HttpListener.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Net.Mail"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Net.Mail.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Net.NameResolution"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Net.NameResolution.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Net.NetworkInformation"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Net.NetworkInformation.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Net.Ping"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Net.Ping.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Net.Primitives"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Net.Primitives.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Net.Quic"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Net.Quic.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Net.Requests"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Net.Requests.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Net.Security"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Net.Security.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Net.ServerSentEvents"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Net.ServerSentEvents.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Net.ServicePoint"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Net.ServicePoint.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Net.Sockets"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Net.Sockets.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Net.WebClient"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Net.WebClient.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Net.WebHeaderCollection"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Net.WebHeaderCollection.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Net.WebProxy"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Net.WebProxy.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Net.WebSockets.Client"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Net.WebSockets.Client.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Net.WebSockets"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Net.WebSockets.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Net"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Net.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Numerics.Vectors"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Numerics.Vectors.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Numerics"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Numerics.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.ObjectModel"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.ObjectModel.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Private.CoreLib"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Private.CoreLib.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Private.CoreLib"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Private.CoreLib.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Private.DataContractSerialization"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Private.DataContractSerialization.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Private.Uri"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Private.Uri.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Private.Xml.Linq"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Private.Xml.Linq.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Private.Xml"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Private.Xml.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Reflection.DispatchProxy"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Reflection.DispatchProxy.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Reflection.Emit.ILGeneration"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Reflection.Emit.ILGeneration.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Reflection.Emit.Lightweight"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Reflection.Emit.Lightweight.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Reflection.Emit"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Reflection.Emit.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Reflection.Extensions"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Reflection.Extensions.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Reflection.Metadata"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Reflection.Metadata.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Reflection.Primitives"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Reflection.Primitives.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Reflection.TypeExtensions"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Reflection.TypeExtensions.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Reflection"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Reflection.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Resources.Reader"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Resources.Reader.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Resources.ResourceManager"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Resources.ResourceManager.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Resources.Writer"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Resources.Writer.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Runtime.CompilerServices.Unsafe.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Runtime.CompilerServices.VisualC"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Runtime.CompilerServices.VisualC.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Runtime.Extensions"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Runtime.Extensions.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Runtime.Handles"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Runtime.Handles.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Runtime.InteropServices.JavaScript"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Runtime.InteropServices.JavaScript.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Runtime.InteropServices.RuntimeInformation"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Runtime.InteropServices.RuntimeInformation.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Runtime.InteropServices"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Runtime.InteropServices.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Runtime.Intrinsics"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Runtime.Intrinsics.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Runtime.Loader"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Runtime.Loader.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Runtime.Numerics"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Runtime.Numerics.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Runtime.Serialization.Formatters"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Runtime.Serialization.Formatters.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Runtime.Serialization.Json"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Runtime.Serialization.Json.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Runtime.Serialization.Primitives"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Runtime.Serialization.Primitives.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Runtime.Serialization.Xml"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Runtime.Serialization.Xml.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Runtime.Serialization"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Runtime.Serialization.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Runtime"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Runtime.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Security.AccessControl"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Security.AccessControl.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Security.Claims"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Security.Claims.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Security.Cryptography.Algorithms"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Security.Cryptography.Algorithms.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Security.Cryptography.Cng"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Security.Cryptography.Cng.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Security.Cryptography.Csp"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Security.Cryptography.Csp.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Security.Cryptography.Encoding"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Security.Cryptography.Encoding.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Security.Cryptography.OpenSsl"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Security.Cryptography.OpenSsl.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Security.Cryptography.Primitives"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Security.Cryptography.Primitives.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Security.Cryptography.X509Certificates"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Security.Cryptography.X509Certificates.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Security.Cryptography"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Security.Cryptography.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Security.Principal.Windows"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Security.Principal.Windows.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Security.Principal"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Security.Principal.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Security.SecureString"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Security.SecureString.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Security"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Security.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.ServiceModel.Web"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.ServiceModel.Web.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.ServiceProcess"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.ServiceProcess.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Text.Encoding.CodePages"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Text.Encoding.CodePages.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Text.Encoding.Extensions"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Text.Encoding.Extensions.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Text.Encoding"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Text.Encoding.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Text.Encodings.Web"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Text.Encodings.Web.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Text.Json"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Text.Json.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Text.RegularExpressions"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Text.RegularExpressions.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Threading.AccessControl"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Threading.AccessControl.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Threading.Channels"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Threading.Channels.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Threading.Overlapped"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Threading.Overlapped.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Threading.Tasks.Dataflow"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Threading.Tasks.Dataflow.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Threading.Tasks.Extensions"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Threading.Tasks.Extensions.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Threading.Tasks.Parallel"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Threading.Tasks.Parallel.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Threading.Tasks"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Threading.Tasks.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Threading.Thread"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Threading.Thread.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Threading.ThreadPool"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Threading.ThreadPool.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Threading.Timer"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Threading.Timer.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Threading"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Threading.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Transactions.Local"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Transactions.Local.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Transactions"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Transactions.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.ValueTuple"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.ValueTuple.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Web.HttpUtility"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Web.HttpUtility.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Web"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Web.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Windows"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Windows.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Xml.Linq"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Xml.Linq.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Xml.ReaderWriter"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Xml.ReaderWriter.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Xml.Serialization"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Xml.Serialization.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Xml.XDocument"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Xml.XDocument.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Xml.XPath.XDocument"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Xml.XPath.XDocument.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Xml.XPath"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Xml.XPath.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Xml.XmlDocument"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Xml.XmlDocument.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Xml.XmlSerializer"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Xml.XmlSerializer.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="System.Xml"><HintPath>/home/ray/.dotnet/shared/Microsoft.NETCore.App/10.0.12/System.Xml.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="SFOTH.Simulation"><HintPath>SFOTH.Simulation.dll</HintPath></Reference>
-    <Reference Include="SFOTH.Protocol"><HintPath>SFOTH.Protocol.dll</HintPath></Reference>
-    <Reference Include="BepuPhysics"><HintPath>BepuPhysics.dll</HintPath></Reference>
-    <Reference Include="BepuUtilities"><HintPath>BepuUtilities.dll</HintPath></Reference>
+    <Reference Include="SFOTH.Simulation">
+      <HintPath>SFOTH.Simulation.dll</HintPath>
+    </Reference>
+    <Reference Include="SFOTH.Protocol">
+      <HintPath>SFOTH.Protocol.dll</HintPath>
+    </Reference>
+    <Reference Include="BepuPhysics">
+      <HintPath>BepuPhysics.dll</HintPath>
+    </Reference>
+    <Reference Include="BepuUtilities">
+      <HintPath>BepuUtilities.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>
