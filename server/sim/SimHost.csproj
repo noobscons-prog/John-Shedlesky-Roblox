@@ -5,6 +5,11 @@
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <AssemblyName>SimHost</AssemblyName>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+    <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+    <UseAppHost>false</UseAppHost>
+    <RuntimeFrameworkVersion>10.0.0</RuntimeFrameworkVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'ios-arm64'">
@@ -15,6 +20,12 @@
     <PublishTrimmed>true</PublishTrimmed>
     <InvariantGlobalization>true</InvariantGlobalization>
   </PropertyGroup>
+
+  <ItemGroup Condition="'$(SimHostRuntimeDir)' != ''">
+    <Reference Include="$(SimHostRuntimeDir)/*.dll">
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
 
   <ItemGroup>
     <Reference Include="SFOTH.Simulation">
@@ -28,13 +39,6 @@
     </Reference>
     <Reference Include="BepuUtilities">
       <HintPath>BepuUtilities.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(SimHostCoreLib)' != ''">
-    <Reference Include="System.Private.CoreLib">
-      <HintPath>$(SimHostCoreLib)</HintPath>
-      <Private>false</Private>
     </Reference>
   </ItemGroup>
 </Project>
