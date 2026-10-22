@@ -2,7 +2,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace SimHost.Native;
+namespace SfothNative;
 
 public static class NativeExports
 {
@@ -14,9 +14,6 @@ public static class NativeExports
     {
         try
         {
-            // Replace this line if your Program.cs has an init entry point
-            // (e.g. Program.Initialize();). If the sim is stateless until
-            // the first Step, this can stay as-is.
             return 0;
         }
         catch
@@ -30,9 +27,8 @@ public static class NativeExports
     {
         try
         {
-            // Call your existing simulation tick here. For example:
-            //   Program.Tick();
-            // If your Program.cs has a different method name, change it here.
+            // Replace this with the call that advances your sim by one tick.
+            // Example: Program.Tick();
             return 0;
         }
         catch
@@ -46,9 +42,7 @@ public static class NativeExports
     {
         lock (_lock)
         {
-            // Replace this with the call that returns your current snapshot.
-            // Example:
-            //   string json = Program.GetSnapshotJson();
+            // Replace this with the call that returns your snapshot JSON.
             string json = "{}";
 
             if (_lastJsonPtr != IntPtr.Zero)
