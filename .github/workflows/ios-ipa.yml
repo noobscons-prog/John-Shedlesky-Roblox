@@ -54,14 +54,8 @@ jobs:
             -c Release \
             -p:SimHostRuntimeDir="${{ steps.runtimedir.outputs.path }}"
 
-          echo "=== publish output ==="
-          ls -la server/sim/bin/Release/net10.0/ios-arm64/publish/
-
           mkdir -p sim-libs
           cp server/sim/bin/Release/net10.0/ios-arm64/publish/*.a sim-libs/
-
-          echo "=== sim-libs ==="
-          ls -la sim-libs/
 
       - name: Add NativeSimHost.swift
         run: |
@@ -353,7 +347,6 @@ jobs:
           /usr/libexec/PlistBuddy -c "Add :NSAppTransportSecurity dict" "$PLIST"
           /usr/libexec/PlistBuddy -c "Add :NSAppTransportSecurity:NSAllowsLocalNetworking bool true" "$PLIST"
 
-          # Force plist to be valid XML so E-Sign can parse it
           plutil -convert xml1 "$PLIST"
 
       - name: Validate Info.plist
@@ -364,9 +357,6 @@ jobs:
         env:
           LIB_DIR: ${{ github.workspace }}/sim-libs
         run: |
-          set -x
-          ls -la "$LIB_DIR"
-
           xcodebuild \
             -workspace ios/App/App.xcworkspace \
             -scheme App \
@@ -381,17 +371,7 @@ jobs:
       - name: Show xcodebuild tail on failure
         if: failure()
         run: |
-          echo "=== last 200 lines of xcodebuild.log ==="
           tail -200 xcodebuild.log || true
-
-      - name: Inspect App Bundle
-        run: |
-          echo "=== App Bundle Root ==="
-          ls -la build/Build/Products/Release-iphoneos/App.app/
-          echo "=== Executable Architecture ==="
-          lipo -info build/Build/Products/Release-iphoneos/App.app/App || true
-          echo "=== Frameworks (if any) ==="
-          ls -la build/Build/Products/Release-iphoneos/App.app/Frameworks 2>/dev/null || echo "No Frameworks folder"
 
       - name: Package unsigned IPA with Ad-Hoc Signature
         run: |
@@ -399,12 +379,43 @@ jobs:
           mkdir -p Payload
           cp -R build/Build/Products/Release-iphoneos/App.app Payload/
           
+          echo "=== Payload/App.app contents ==="
+          ls -la Payload/App.app/
+          
+          if [ ! -f Payload/App.app/Info.plist ]; then
+            echo "ERROR: Info.plist missing in built app!"
+            exit 1
+          fi
+
+          plutil -lint Payload/App.app/Info.plist
+
+          # Verify CFBundleExecutable
+          EXEC_NAME=$(/usr/libexec/PlistBuddy -c "Print :CFBundleExecutable" Payload/App.app/Info.plist)
+          echo "Executable: $EXEC_NAME"
+          
+          if [ ! -f "Payload/App.app/$EXEC_NAME" ]; then
+            echo "ERROR: Executable $EXEC_NAME not found!"
+            exit 1
+          fi
+
           # Remove any leftover Xcode signature folders
           rm -rf Payload/App.app/_CodeSignature
           
-          # Apply a dummy ad-hoc signature so E-Sign accepts the bundle structure
-          echo "Applying ad-hoc signature..."
-          codesign -s - --force --deep Payload/App.app
+          # Apply a dummy ad-hoc signature
+          echo "Signing executable..."
+          codesign --force --sign - Payload/App.app/$EXEC_NAME
+
+          echo "Signing frameworks..."
+          if [ -d Payload/App.app/Frameworks ]; then
+            find Payload/App.app/Frameworks -type f 2>/dev/null | while read f; do
+              if file "$f" | grep -q "Mach-O"; then
+                codesign --force --sign - "$f"
+              fi
+            done
+          fi
+          
+          echo "Signing bundle..."
+          codesign --force --sign - Payload/App.app
           
           # Create a clean IPA archive bypassing macOS metadata
           ditto -c -k --sequesterRsrc --keepParent Payload SFOTH-unsigned.ipa
