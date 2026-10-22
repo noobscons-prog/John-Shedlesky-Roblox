@@ -10,7 +10,7 @@
   <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'ios-arm64'">
     <OutputType>Library</OutputType>
     <PublishAot>true</PublishAot>
-    <NativeLib>Static</NativeLib>
+    <PublishAotUsingRuntimePack>true</PublishAotUsingRuntimePack>
     <StripSymbols>true</StripSymbols>
     <PublishTrimmed>true</PublishTrimmed>
     <InvariantGlobalization>true</InvariantGlobalization>
