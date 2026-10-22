@@ -20,9 +20,13 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      - name: Install iOS workload
+      - name: Discover System.Private.CoreLib
+        id: corelib
         run: |
-          dotnet workload install ios
+          CORELIB=$(find "${DOTNET_ROOT:-$HOME/.dotnet}/shared/Microsoft.NETCore.App" \
+            -name System.Private.CoreLib.dll 2>/dev/null | sort -V | tail -1)
+          echo "path=$CORELIB" >> "$GITHUB_OUTPUT"
+          echo "found: $CORELIB"
 
       - name: Install Capacitor
         run: |
@@ -43,15 +47,50 @@ jobs:
         run: |
           npx cap sync ios
 
-      - name: Build SimHost native static library for iOS
+      - name: Build SimHost NativeAOT library for iOS
         run: |
           dotnet publish server/sim/SimHost.csproj \
             -r ios-arm64 \
             -c Release \
-            /p:NativeLib=Static \
-            /p:StripSymbols=true
+            -p:SimHostCoreLib="${{ steps.corelib.outputs.path }}"
+
           ls -la server/sim/bin/Release/net10.0/ios-arm64/publish/
-          cp server/sim/bin/Release/net10.0/ios-arm64/publish/*.a ios/App/App/libSimHost.a
+
+      - name: Package SimHost.framework
+        run: |
+          mkdir -p SimHost.framework
+
+          cp server/sim/bin/Release/net10.0/ios-arm64/publish/SimHost.dylib \
+             SimHost.framework/SimHost
+
+          install_name_tool -id @rpath/SimHost.framework/SimHost \
+             SimHost.framework/SimHost
+
+          cat > SimHost.framework/Info.plist <<'PLIST'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>CFBundleExecutable</key>
+              <string>SimHost</string>
+              <key>CFBundleIdentifier</key>
+              <string>com.noobscons.sfoth.simhost</string>
+              <key>CFBundleName</key>
+              <string>SimHost</string>
+              <key>CFBundlePackageType</key>
+              <string>FMWK</string>
+              <key>CFBundleShortVersionString</key>
+              <string>1.0</string>
+              <key>CFBundleVersion</key>
+              <string>1</string>
+              <key>MinimumOSVersion</key>
+              <string>15.0</string>
+          </dict>
+          </plist>
+          PLIST
+
+          mkdir -p ios/App/App/Frameworks
+          cp -R SimHost.framework ios/App/App/Frameworks/
 
       - name: Add NativeSimHost.swift
         run: |
@@ -353,7 +392,14 @@ jobs:
             -derivedDataPath build \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
-            OTHER_LDFLAGS="-L$(pwd)/ios/App/App -lSimHost -lz -lc++ -framework Foundation -framework CoreFoundation -framework Security -u _sfoth_init -u _sfoth_step_sim -u _sfoth_get_snapshot_json"
+            FRAMEWORK_SEARCH_PATHS="$(pwd)/ios/App/App/Frameworks" \
+            OTHER_LDFLAGS="-framework SimHost -lz -lc++ -framework Foundation -framework CoreFoundation -framework Security"
+
+      - name: Embed SimHost.framework into the app bundle
+        run: |
+          APP=build/Build/Products/Release-iphoneos/App.app
+          mkdir -p "$APP/Frameworks"
+          cp -R ios/App/App/Frameworks/SimHost.framework "$APP/Frameworks/"
 
       - name: Package unsigned IPA
         run: |
